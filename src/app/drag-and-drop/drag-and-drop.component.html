@@ -1,0 +1,19 @@
+<div class="containerDrag row m-2" cdkDropList [cdkDropListData]="itemsDrag" (cdkDropListDropped)="drop($event)" #container1="cdkDropList">
+  <div cdkDrag (cdkDragStarted)="onDragStart(item)"  class="item col" *ngFor="let item of itemsDrag; index as i">
+    <span><strong>{{item.name}}</strong></span>
+  </div>
+</div>
+
+<div class="containerDrop" cdkDropListGroup>
+  <div *ngFor="let pos of gridPositions; let i = index" class="item col"
+       cdkDropList
+       (mouseenter)="onMouseEnter(i)"
+       (mouseleave)="onMouseLeave()"
+       [cdkDropListConnectedTo]="[container1]"
+       [ngClass]="{'occupied': pos.occupied}">
+    <div *ngIf="pos.item" (dblclick)="onRemoveItem(pos)" cdkDrag>
+      <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
+      <span><strong>{{pos.item.name}}</strong></span>
+    </div>
+  </div>
+</div>

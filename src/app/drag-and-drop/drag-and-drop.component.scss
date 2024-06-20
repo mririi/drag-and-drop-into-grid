@@ -1,0 +1,36 @@
+.containerDrag {
+  display: flex;
+  background-color: antiquewhite;
+  height: 20vh;
+}
+
+.containerDrop {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 1px;
+  border: 1px solid black;
+  height: 20vh;
+}
+
+.item {
+  background-color: lightblue;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  height: 100%;
+  width: 100%;
+}
+
+.occupied {
+  background-color: lightgreen;
+}
+
+.example-custom-placeholder {
+  background: #ccc;
+  border: dotted 3px #999;
+  min-height: 60px;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
