@@ -1,97 +1,132 @@
-import { Component } from '@angular/core';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import {Component, OnInit} from '@angular/core';
 
 interface DragItem {
   name: string;
   cols: number;
   rows: number;
+  draggable: boolean;
 }
+
 
 @Component({
   selector: 'app-drag-and-drop',
   templateUrl: './drag-and-drop.component.html',
   styleUrls: ['./drag-and-drop.component.scss']
 })
-export class DragAndDropComponent {
+export class DragAndDropComponent implements OnInit {
   itemsDrag: DragItem[] = [
-    { name: 'Item 1', cols: 1, rows: 1 },
-    { name: 'Item 2', cols: 2, rows: 1 },
-    { name: 'Item 3', cols: 2, rows: 2 },
-    { name: 'Item 4', cols: 1, rows: 1 },
-    { name: 'Item 5', cols: 2, rows: 1 },
-    { name: 'Item 6', cols: 2, rows: 2 },
-    { name: 'Item 7', cols: 1, rows: 1 },
-    { name: 'Item 8', cols: 2, rows: 1 },
-    { name: 'Item 9', cols: 2, rows: 2 }
+    {name: 'Item 1', cols: 1, rows: 1, draggable: true},
+    {name: 'Item 2x', cols: 2, rows: 1, draggable: true},
+    {name: 'Item 4x', cols: 2, rows: 2, draggable: true},
+    {name: 'Item 1', cols: 1, rows: 1, draggable: true},
+    {name: 'Item 2x', cols: 2, rows: 1, draggable: true},
+    {name: 'Item 4x', cols: 2, rows: 2, draggable: true},
+    {name: 'Item 1', cols: 1, rows: 1, draggable: true},
+    {name: 'Item 2x', cols: 2, rows: 1, draggable: true},
+    {name: 'Item 4x', cols: 2, rows: 2, draggable: true},
+    {name: 'Item 1', cols: 1, rows: 1, draggable: true},
+    {name: 'Item 2x', cols: 2, rows: 1, draggable: true},
+    {name: 'Item 4x', cols: 2, rows: 2, draggable: true},
+    {name: 'Item 1', cols: 1, rows: 1, draggable: true},
+    {name: 'Item 2x', cols: 2, rows: 1, draggable: true},
+    {name: 'Item 4x', cols: 2, rows: 2, draggable: true},
   ];
-  gridPositions: { occupied: boolean, item: DragItem | null }[] = Array.from({ length: 20 }, () => ({ occupied: false, item: null }));
+  gridPositions: { occupied: boolean, item: DragItem | null } [] = this.initializeGrid();
   currentDraggedItem: DragItem | null = null;
   currentPosition: number = -1;
 
-  drop(event: CdkDragDrop<any>) {
-      if (!this.gridPositions[this.currentPosition].occupied) {
+  ngOnInit() {
+    const array = localStorage.getItem('array');
+    if (array) {
+      this.gridPositions = JSON.parse(array);
+    }
+  }
 
-        //4 blocs
-        if(this.currentDraggedItem?.rows === 2) {
-          const firstCondition: boolean = this.currentPosition < 9;
-          const secondCondition: boolean = this.currentPosition === 9;
-          const thirdCondition: boolean = this.currentPosition === 19;
-          const fourthCondition: boolean = this.currentPosition > 9 && !thirdCondition;
-          const firstIndex: number = firstCondition || fourthCondition ? this.currentPosition + 1 : this.currentPosition - 1;
-          const secondIndex: number = this.currentPosition <= 9 ? this.currentPosition + 10 : this.currentPosition - 10;
-          const thirdIndex: number = firstCondition ? this.currentPosition + 11 : secondCondition? this.currentPosition + 9 : thirdCondition ? this.currentPosition - 11 : fourthCondition? this.currentPosition - 9 : -1;
-          if (!(this.gridPositions[firstIndex].occupied || this.gridPositions[secondIndex].occupied || this.gridPositions[thirdIndex].occupied)) {
-            this.gridPositions[this.currentPosition].occupied = true;
-            if (firstCondition) {
-              this.gridPositions[firstIndex].occupied = true;
-              this.gridPositions[secondIndex].occupied = true;
-              this.gridPositions[thirdIndex].occupied = true;
-              this.gridPositions[this.currentPosition].item = this.currentDraggedItem;
-              this.itemsDrag.splice(event.previousIndex, 1);
-              return;
-            }
-            if (secondCondition) {
-              this.gridPositions[firstIndex].occupied = true;
-              this.gridPositions[secondIndex].occupied = true;
-              this.gridPositions[thirdIndex].occupied = true;
-              this.gridPositions[firstIndex].item = this.currentDraggedItem;
-              this.itemsDrag.splice(event.previousIndex, 1);
-              return;
-            }
-            if (thirdCondition) {
-              this.gridPositions[firstIndex].occupied = true;
-              this.gridPositions[secondIndex].occupied = true;
-              this.gridPositions[thirdIndex].occupied = true;
-              this.gridPositions[thirdIndex].item = this.currentDraggedItem;
-              this.itemsDrag.splice(event.previousIndex, 1);
-              return;
-            }
-            if (fourthCondition) {
-              this.gridPositions[firstIndex].occupied = true;
-              this.gridPositions[secondIndex].occupied = true;
-              this.gridPositions[thirdIndex].occupied = true;
-              this.gridPositions[secondIndex].item = this.currentDraggedItem;
-              this.itemsDrag.splice(event.previousIndex, 1);
-              return;
-            }
-          }
-        }
+  initializeGrid() {
+    return Array.from({length: 20}, () => ({occupied: false, item: null}));
+  }
 
-        // 2 blocs
-        if(this.currentDraggedItem?.cols === 2 && this.currentDraggedItem?.rows === 1) {
-          this.gridPositions[this.currentPosition].occupied = true;
-
-          if(this.currentPosition === 9 || this.currentPosition === 19) {
-            this.gridPositions[this.currentPosition - 1].occupied = true;
-            this.gridPositions[this.currentPosition - 1].item = this.currentDraggedItem;
-            return;
-          }
-          this.gridPositions[this.currentPosition + 1].occupied = true;
-          this.gridPositions[this.currentPosition].item = this.currentDraggedItem;
-          return;
-        }
-        this.gridPositions[this.currentPosition].item = this.currentDraggedItem;
+  drop() {
+    if (!this.checkOccupied(0)) {
+      if (this.currentDraggedItem?.cols === 2 && this.currentDraggedItem.rows === 1) {
+        this.place2xItem();
+        return;
       }
+      if (this.currentDraggedItem?.cols === 2 && this.currentDraggedItem.rows === 2) {
+        this.placeSquareItem();
+        return;
+      }
+      this.occupied = 0;
+      this.occupiedItem = 0;
+    }
+  }
+
+  place2xItem() {
+    if (this.currentPosition === 9 || this.currentPosition === 19) {
+      if (this.checkOccupied(-1)) return;
+      this.occupied = 0;
+      this.occupied = -1;
+      this.occupiedItem = -1;
+    } else {
+      if (this.checkOccupied(1)) return;
+      this.occupied = 0;
+      this.occupied = 1;
+      this.occupiedItem = 0;
+    }
+  }
+
+  placeSquareItem() {
+    if (this.currentPosition === 9) {
+      if (this.checkOccupied(-1) || this.checkOccupied(9) || this.checkOccupied(10)) return;
+      this.occupiedItem = -1;
+      this.occupied = 0;
+      this.occupied = -1;
+      this.occupied = 9;
+      this.occupied = 10;
+      return;
+    }
+    if (this.currentPosition === 19) {
+      if (this.checkOccupied(-1) || this.checkOccupied(-11) || this.checkOccupied(-10)) return;
+      this.occupiedItem = -11;
+      this.occupied = 0;
+      this.occupied = -1;
+      this.occupied = -11;
+      this.occupied = -10;
+      return;
+    }
+    if (this.currentPosition < 9) {
+      if (this.checkOccupied(11) || this.checkOccupied(10) || this.checkOccupied(1)) return;
+      this.occupiedItem = 0;
+      this.occupied = 0;
+      this.occupied = 1;
+      this.occupied = 10;
+      this.occupied = 11;
+      return;
+    }
+    if (this.currentPosition > 9) {
+      if (this.checkOccupied(-9) || this.checkOccupied(-10) || this.checkOccupied(1)) return;
+      this.occupiedItem = -10;
+      this.occupied = 0;
+      this.occupied = -9;
+      this.occupied = -10;
+      this.occupied = 1;
+    }
+  }
+
+  set occupied(distance: number) {
+    this.getGridItem(distance).occupied = true;
+  }
+
+  set occupiedItem(distance: number) {
+    this.getGridItem(distance).item = this.currentDraggedItem;
+  }
+
+  checkOccupied(distance: number): boolean {
+    return this.getGridItem(distance).occupied;
+  }
+
+  getGridItem(distance: number) {
+    return this.gridPositions[this.currentPosition + distance];
   }
 
   onDragStart(item: DragItem) {
@@ -106,7 +141,11 @@ export class DragAndDropComponent {
     this.currentPosition = -1;
   }
 
-  onRemoveItem(pos:{ occupied: boolean, item: DragItem | null }) {
+  onSave() {
+    localStorage.setItem('array', JSON.stringify(this.gridPositions));
+  }
+
+  onRemoveItem(pos: { occupied: boolean, item: DragItem | null }) {
     if (pos.occupied) {
       const index = this.gridPositions.findIndex(p => p === pos);
       if (pos.item) {
@@ -115,5 +154,10 @@ export class DragAndDropComponent {
       this.gridPositions[index].occupied = false;
       this.gridPositions[index].item = null;
     }
+  }
+
+  onReset() {
+    this.gridPositions = Array.from({length: 20}, () => ({occupied: false, item: null}));
+    localStorage.removeItem('array');
   }
 }

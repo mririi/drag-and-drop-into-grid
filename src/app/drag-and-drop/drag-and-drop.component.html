@@ -1,19 +1,25 @@
-<div class="containerDrag row m-2" cdkDropList [cdkDropListData]="itemsDrag" (cdkDropListDropped)="drop($event)" #container1="cdkDropList">
-  <div cdkDrag (cdkDragStarted)="onDragStart(item)"  class="item col" *ngFor="let item of itemsDrag; index as i">
-    <span><strong>{{item.name}}</strong></span>
-  </div>
-</div>
-
 <div class="containerDrop" cdkDropListGroup>
   <div *ngFor="let pos of gridPositions; let i = index" class="item col"
        cdkDropList
        (mouseenter)="onMouseEnter(i)"
        (mouseleave)="onMouseLeave()"
        [cdkDropListConnectedTo]="[container1]"
-       [ngClass]="{'occupied': pos.occupied}">
+       [ngClass]="{'occupied': pos.occupied && !!pos.item, 'item-2x': pos.item?.cols === 2, 'item-4x': pos.item?.rows === 2}">
     <div *ngIf="pos.item" (dblclick)="onRemoveItem(pos)" cdkDrag>
-      <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
       <span><strong>{{pos.item.name}}</strong></span>
     </div>
   </div>
+</div>
+
+<div class="containerDrag row m-2" cdkDropList [cdkDropListData]="itemsDrag" (cdkDropListDropped)="drop()" #container1="cdkDropList">
+  <ng-container *ngFor="let item of itemsDrag; index as i">
+    <div cdkDrag (cdkDragStarted)="onDragStart(item)" *ngIf="item.draggable" class="item col">
+      <span><strong>{{item.name}}</strong></span>
+    </div>
+  </ng-container>
+</div>
+
+<div class="row m-5">
+  <button class="btn btn-primary col" (click)="onSave()">Save</button>
+  <button class="btn btn-danger col" (click)="onReset()">Reset</button>
 </div>
